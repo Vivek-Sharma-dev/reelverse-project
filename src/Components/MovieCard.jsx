@@ -35,7 +35,7 @@ const MovieCard = ({ movie }) => {
           }}
         />
 
-        <div className={`absolute top-2 right-2 ${badgeColor} text-white text-md md:text-lg italic font-bold px-2 py-1 rounded-md z-10 `}>
+        <div className={`absolute top-2 right-2 ${badgeColor} text-white text-xs md:text-lg italic font-bold px-2 py-1 rounded-md z-10 `}>
           {badgeText}
         </div>
         <div className="absolute bottom-0 p-3 bg-black/40 transition-all duration-300 opacity-0 group-hover:opacity-100 translate-y-full group-hover:translate-y-0">

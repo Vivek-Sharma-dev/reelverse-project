@@ -28,17 +28,15 @@ const Trending = () => {
   const getTrendingMovies = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/trending/movie/week", {
+      // --- THIS IS THE NEW API CALL ---
+      const res = await api.get("/movie/now_playing", {
         params: {
           page: page,
         },
       });
 
       setMovies((prevMovies) => {
-        const newMovies = [
-          ...prevMovies,
-          ...res.data.results.filter((movie) => movie),
-        ];
+        const newMovies = res.data.results.filter((movie) => movie);
         const existingMovieIds = new Set(prevMovies.map((movie) => movie.id));
         const uniqueMovies = newMovies.filter(
           (movie) => !existingMovieIds.has(movie.id)
