@@ -2,12 +2,14 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import api from "../api/tmdbApi";
 import MovieCard from "../Components/MovieCard";
 import HeroCarousel from "../Components/HeroCarousel";
+import { MdError } from "react-icons/md";
 
 const Hollywood = () => {
   const [content, setContent] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [err, setErr] = useState(null);
 
   const observer = useRef();
 
@@ -64,6 +66,7 @@ const Hollywood = () => {
       setHasMore(newMovies.length > 0 || newTvShows.length > 0);
     } catch (error) {
       console.log(`error fetching Hollywood content: ${error}`);
+      setErr(error.message || "Failed to fetch movies. Please try again.");
     }
     setLoading(false);
   };
@@ -76,37 +79,42 @@ const Hollywood = () => {
     <div>
       <HeroCarousel movies={content.slice(0, 5)} />
       <div className="container mx-auto p-4 md:p-8">
-        <h1 className="text-3xl md:text-4xl font-bold text-white mb-6">
-          HollyWood (Movies & Series)
-        </h1>
         {loading && content.length === 0 ? (
           <p className="text-gray-400 flex justify-center items-center h-[60dvh] text-2xl md:text-3xl font-bold">
             Loading content...
           </p>
-        ) : (
-          <div className="grid grid-cols-2  md:grid-cols-3 lg:grid-cols-4 md:gap-6 gap-4">
-            
-            {content.map((item, idx) => {
-              const uniqueKey = `${item.id}-${item.media_type || (item.title ?"movie" : "tv")}`;
-              if (content.length === idx + 1) {
-                return (
-                  <div
-                    ref={lastElementRef}
-                    key={uniqueKey}
-                  >
-                    <MovieCard  movie={item} />
-                  </div>
-                );
-              } else {
-                return (
-                  <MovieCard
-                    key={uniqueKey}
-                    movie={item}
-                  />
-                );
-              }
-            })}
+        ) : err ? (
+          // --- B. ERROR STATE ---
+          <div className="text-red-400 flex flex-col justify-center items-center h-[60dvh] text-2xl md:text-3xl font-bold">
+            <MdError size={60} className="mb-4" />
+            <p>Error: {err}</p>
+            <p className="text-lg text-gray-400 mt-2">
+              Could not load data. Please check your API key or network
+              connection.
+            </p>
           </div>
+        ) : (
+          <>
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-6">
+              HollyWood (Movies & Series)
+            </h1>
+            <div className="grid grid-cols-2  md:grid-cols-3 lg:grid-cols-4 md:gap-6 gap-4">
+              {content.map((item, idx) => {
+                const uniqueKey = `${item.id}-${
+                  item.media_type || (item.title ? "movie" : "tv")
+                }`;
+                if (content.length === idx + 1) {
+                  return (
+                    <div ref={lastElementRef} key={uniqueKey}>
+                      <MovieCard movie={item} />
+                    </div>
+                  );
+                } else {
+                  return <MovieCard key={uniqueKey} movie={item} />;
+                }
+              })}
+            </div>
+          </>
         )}
         {loading && content.length > 0 && (
           <p className="text-gray-400 text-lg w-full text-center mt-8">

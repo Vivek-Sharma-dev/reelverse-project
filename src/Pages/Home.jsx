@@ -3,6 +3,7 @@ import api from "../api/tmdbApi";
 import MovieCard from "../Components/MovieCard";
 import { Link } from "react-router-dom";
 import HeroCarousel  from "../Components/HeroCarousel";
+import { MdError } from "react-icons/md";
 
 const currentYear = new Date().getFullYear();
 
@@ -12,10 +13,11 @@ const Home = () => {
   const [topRatedMovies, setTopRatedMovies] = useState([]);
   const [upcomingMovies, setUpcomingMovies] = useState([]); 
   const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState(null)
 
   // --- 2. ADD NEW FETCH FUNCTION FOR TRENDING MOVIES ---
   const getTrendingMovies = () => {
-    return api.get("/trending/movie/week");
+    return api.get("/movie/now_playing");
   };
 
   // --- 2. ADD NEW FETCH FUNCTION FOR TOP RATED MOVIES ---
@@ -53,6 +55,8 @@ const Home = () => {
       setUpcomingMovies(upcomingRes.data.results.filter((movie) => movie)); 
     } catch (error) {
       console.log(`Error fetching movies: ${error}`);
+      setErr(error.message || "Failed to fetch movies. Please try again.");
+
     }
     setLoading(false);
   };
@@ -67,7 +71,17 @@ const Home = () => {
     <>
     {/* --- 5. ADD LOADING STATE --- */}
       {loading ? (
-        <p className="text-gray-400 flex justify-center items-center h-[60dvh] text-2xl md:text-3xl font-bold">Loading all movies...</p>
+        // --- A. LOADING STATE ---
+        <p className="text-gray-400 flex justify-center items-center h-[60dvh] text-2xl md:text-3xl font-bold">
+          Loading all movies...
+        </p>
+      ) : err ? (
+        // --- B. ERROR STATE ---
+        <div className="text-red-400 flex flex-col justify-center items-center h-[60dvh] text-2xl md:text-3xl font-bold">
+          <MdError size={60} className="mb-4" />
+          <p>Error: {err}</p>
+          <p className="text-lg text-gray-400 mt-2">Could not load data. Please check your API key or network connection.</p>
+        </div>
       ) : (
         <>
           {/* Section 1: Trending */}

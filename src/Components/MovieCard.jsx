@@ -35,7 +35,7 @@ const MovieCard = ({ movie }) => {
           }}
         />
 
-        <div className={`absolute top-2 right-2 ${badgeColor} text-white text-xs md:text-lg italic font-bold px-2 py-1 rounded-md z-10 `}>
+        <div className={`absolute top-1 md:top-2 right-1 md:right-2 ${badgeColor} text-white text-xs md:text-lg italic font-bold px-2 py-1 rounded-md z-10 `}>
           {badgeText}
         </div>
         <div className="absolute bottom-0 p-3 bg-black/40 transition-all duration-300 opacity-0 group-hover:opacity-100 translate-y-full group-hover:translate-y-0">
@@ -46,10 +46,10 @@ const MovieCard = ({ movie }) => {
       </div>
       <div className="p-3">
         <div className="">
-          <h2 className="text-md md:text-2xl mb-2 font-bold truncate text-white">
+          <h2 className="text-md md:text-2xl md:mb-2 font-bold truncate text-white">
             {title}
           </h2>
-          <p className="text-gray-400 text-lg">
+          <p className="text-gray-400 text-sm italic md:text-lg">
             {releaseDate ? releaseDate.split("-")[0] : "N/A"}
           </p>
         </div>
