@@ -32,7 +32,7 @@ const Hollywood = () => {
     setLoading(true);
     try {
       const [movieRes, tvRes] = await Promise.all([
-        api.get("/discover/movie", {
+        api.get("/movie/now_playing", {
           params: {
             with_origin_country: "US",
             sort_by: "popularity.desc",
