@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import api from "../api/tmdbApi";
-import MovieCard from "../Components/MovieCard";
-import HeroCarousel from "../Components/HeroCarousel";
+import api from "../../api/tmdbApi";
+import MovieCard from "../../Components/MovieCard";
+import HeroCarousel from "../../Components/HeroCarousel";
 import { MdError } from "react-icons/md";
 
-const Hollywood = () => {
+const Anime = () => {
+  // -- 1. State variables --
   const [content, setContent] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -13,6 +14,8 @@ const Hollywood = () => {
 
   const observer = useRef();
 
+  // -- 2. Functions --
+  // -- 2.1. Intersection Observer it's load more content when the last movie is visible --
   const lastElementRef = useCallback(
     (node) => {
       if (loading) return;
@@ -28,13 +31,15 @@ const Hollywood = () => {
     [loading, hasMore]
   );
 
-  const getHollywoodContent = async () => {
+  // -- 2.2. Fetch content --
+  const getAnimeContent = async () => {
     setLoading(true);
     try {
       const [movieRes, tvRes] = await Promise.all([
-        api.get("/movie/now_playing", {
+        api.get("/discover/movie", {
           params: {
-            with_origin_country: "US",
+            with_genres: "16",
+            with_origin_country: "JP",
             sort_by: "popularity.desc",
             "vote_count.gte": 100,
             page: page,
@@ -42,7 +47,8 @@ const Hollywood = () => {
         }),
         api.get("/discover/tv", {
           params: {
-            with_origin_country: "US",
+            with_genres: "16",
+            with_origin_country: "JP",
             sort_by: "popularity.desc",
             "vote_count.gte": 100,
             page: page,
@@ -72,7 +78,7 @@ const Hollywood = () => {
   };
 
   useEffect(() => {
-    getHollywoodContent();
+    getAnimeContent();
   }, [page]);
 
   return (
@@ -96,7 +102,7 @@ const Hollywood = () => {
         ) : (
           <>
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-6">
-              HollyWood (Movies & Series)
+              Anime (Movies & Series)
             </h1>
             <div className="grid grid-cols-2  md:grid-cols-3 lg:grid-cols-4 md:gap-6 gap-4">
               {content.map((item, idx) => {
@@ -126,4 +132,4 @@ const Hollywood = () => {
   );
 };
 
-export default Hollywood;
+export default Anime;

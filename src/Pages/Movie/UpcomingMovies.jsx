@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import api from "../api/tmdbApi";
-import MovieCard from "../Components/MovieCard";
+import api from "../../api/tmdbApi";
+import MovieCard from "../../Components/MovieCard";
 
-const Trending = () => {
+const UpcomingMovies = () => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -24,19 +24,20 @@ const Trending = () => {
     [loading, hasMore]
   );
 
-
-  const getTrendingMovies = async () => {
+  const getUpcomingMoviesDetails = async () => {
     setLoading(true);
     try {
-      // --- THIS IS THE NEW API CALL ---
-      const res = await api.get("/movie/now_playing", {
+      const res = await api.get("/movie/upcoming", {
         params: {
           page: page,
         },
       });
 
       setMovies((prevMovies) => {
-        const newMovies = res.data.results.filter((movie) => movie);
+        const newMovies = [
+          ...prevMovies,
+          ...res.data.results.filter((movie) => movie),
+        ];
         const existingMovieIds = new Set(prevMovies.map((movie) => movie.id));
         const uniqueMovies = newMovies.filter(
           (movie) => !existingMovieIds.has(movie.id)
@@ -46,7 +47,7 @@ const Trending = () => {
 
       setHasMore(res.data.results.length > 0);
     } catch (error) {
-      console.log(`error fetching trending movies: ${error}`);
+      console.log(`error fetching upcoming movies: ${error}`);
     }
     setLoading(false);
   };
@@ -54,16 +55,18 @@ const Trending = () => {
   console.log(movies);
 
   useEffect(() => {
-    getTrendingMovies();
+    getUpcomingMoviesDetails();
   }, [page]);
 
   return (
     <div className="container mx-auto p-4 md:p-8">
       <h1 className="text-3xl md:text-4xl font-bold text-white mb-6">
-        All Trending Movies
+        Upcoming Movies
       </h1>
       {loading && movies.length === 0 ? (
-        <p className="text-gray-400 flex justify-center items-center h-[60dvh] text-2xl md:text-3xl font-bold">Loading movies...</p>
+        <p className="text-gray-400 flex justify-center items-center h-[60dvh] text-2xl md:text-3xl font-bold">
+          Loading movies...
+        </p>
       ) : (
         <div className="grid grid-cols-2  md:grid-cols-3 lg:grid-cols-4 md:gap-6 gap-4">
           {movies.map((movie, idx) => {
@@ -88,4 +91,4 @@ const Trending = () => {
   );
 };
 
-export default Trending;
+export default UpcomingMovies;

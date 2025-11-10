@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import MovieCard from "../Components/MovieCard";
-import api from "../api/tmdbApi";
+import MovieCard from "../../Components/MovieCard";
+import api from "../../api/tmdbApi";
 const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
 
 const ActorDetails = () => {

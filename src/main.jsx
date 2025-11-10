@@ -8,17 +8,17 @@ import { WatchListProvider } from './Context/WatchListContext.jsx'
 import App from './App.jsx'
 import Home from './Pages/Home.jsx'
 import SearchResult from './Pages/SearchResult.jsx'
-import MovieDetails from './Pages/MovieDetails.jsx'
-import Bollywood from './Pages/Bollywood.jsx'
-import Hollywood from './Pages/Hollywood.jsx'
+import MovieDetails from './Pages/Details/MovieDetails.jsx'
+import Bollywood from './Pages/Movie/Bollywood.jsx'
+import Hollywood from './Pages/Movie/Hollywood.jsx'
 import Contact from './Pages/Contact.jsx'
-import Anime from './Pages/Anime.jsx'
-import TopRatedMovies from './Pages/TopRatedMovies.jsx'
-import Trending from './Pages/Trending.jsx'
-import UpcomingMovies from './Pages/UpcomingMovies';
+import Anime from './Pages/Movie/Anime.jsx'
+import TopRatedMovies from './Pages/Movie/TopRatedMovies.jsx'
+import Trending from './Pages/Movie/Trending.jsx'
+import UpcomingMovies from './Pages/Movie/UpcomingMovies.jsx';
 import WatchList from './Pages/WatchList.jsx';
-import ActorDetails from './Pages/ActorDetails.jsx'
-import TvShowDetails from './Pages/TvShowDetails.jsx'
+import ActorDetails from './Pages/Details/ActorDetails.jsx'
+import TvShowDetails from './Pages/Details/TvShowDetails.jsx'
 
 
 

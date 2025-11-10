@@ -1,115 +1,113 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import api from "../api/tmdbApi";
+import api from "../../api/tmdbApi";
 import { FaPlay, FaPlus, FaCheck } from "react-icons/fa";
-import { useWatchList } from "../Context/WatchListContext";
-import VideoModal from "./../Components/VideoModal";
+import { useWatchList } from "../../Context/WatchListContext";
+import VideoModal from "../../Components/VideoModal";
 import { MdAccessTime } from "react-icons/md";
 
+// Base URL for movie images
 const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
 const BACKDROP_BASE_URL = "https://image.tmdb.org/t/p/original";
 
-// InfoBar component for TV shows
-const InfoBar = ({ show }) => {
+const InfoBar = ({ movie }) => {
+  const formatRuntime = (runtime) => {
+    const hours = Math.floor(runtime / 60);
+    const minutes = runtime % 60;
+    return `${hours}h ${minutes}m`;
+  };
+
   return (
     <div className="flex flex-wrap text-lg md:text-xl items-center gap-x-6 gap-y-2 text-gray-300 mb-6">
       {/* Release Date */}
-      {show.first_air_date && (
+      {movie.release_date && (
         <span className="font-semibold">
-          {show.first_air_date.split("-")[0]}
+          {movie.release_date.split("_")[0]}
         </span>
       )}
 
       {/* Genres */}
-      <div className="flex gap-2 flex-wrap">
-        {show.genres.slice(0, 3).map((genre) => (
-          <span
-            key={genre.id}
-            className="border-2 border-gray-500 rounded-full px-3 py-0.5 text-lg md:text-xl"
-          >
+      <div className="flex gap-2">
+        {movie.genres.slice(0, 3).map((genre) => (
+          <span className="border-2 border-gray-500 rounded-full px-3 py-0.5 text-lg md:text-xl">
             {genre.name}
           </span>
         ))}
       </div>
 
-      {/* Seasons */}
-      {show.number_of_seasons > 0 && (
+      {/* Runtime */}
+      {movie.runtime > 0 && (
         <span className="font-semibold flex items-center gap-1 text-lg md:text-xl">
           <MdAccessTime />
-          {show.number_of_seasons} Season(s)
+          {formatRuntime(movie.runtime)}
         </span>
       )}
     </div>
   );
 };
 
-// Main Component
-const TvShowDetails = () => {
+const MovieDetails = () => {
+  // States for movie details
   const { id } = useParams();
-  const [show, setShow] = useState(null);
+  const [movie, setMovie] = useState(null);
   const [trailer, setTrailer] = useState(null);
   const [providers, setProviders] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [crew, setCrew] = useState({});
+  const [crew, setCrew] = useState({})
 
   const { addMovie, removeMovie, isMovieInWatchList } = useWatchList();
   const [inWatchList, setInWatchList] = useState(false);
 
   useEffect(() => {
-    const getShowDetails = async () => {
+    const getMovieDetails = async () => {
       setLoading(true);
       try {
-        const [showRes, videosRes, providersRes] = await Promise.all([
-          api.get(`/tv/${id}`, {
+        const [movieRes, videosRes, providersRes] = await Promise.all([
+          api.get(`/movie/${id}`, {
             params: { append_to_response: "credits" },
           }),
-          api.get(`/tv/${id}/videos`),
-          api.get(`/tv/${id}/watch/providers`),
+          api.get(`/movie/${id}/videos`),
+          api.get(`/movie/${id}/watch/providers`),
         ]);
 
-        setShow(showRes.data);
+        setMovie(movieRes.data);
 
-        
-
-        const writer = showRes.data.credits.crew.find(
+        const director = movieRes.data.credits.crew.find(
+          (person) => person.job === "Director"
+        );
+        const writer = movieRes.data.credits.crew.find(
           (person) => person.job === "Writer" || person.job === "Screenplay"
         );
-        setCrew({ writer });
+
+        setCrew({ director, writer });
 
         const officialTrailer = videosRes.data.results.find(
           (vid) => vid.site === "YouTube" && vid.type === "Trailer"
         );
         setTrailer(officialTrailer);
+
+        // Save ALL provider info for India (IN)
         setProviders(providersRes.data.results.IN);
-        setInWatchList(isMovieInWatchList(showRes.data.id));
+
+        setInWatchList(isMovieInWatchList(movieRes.data.id));
       } catch (error) {
-        console.log(`Error fetching show details: ${error}`);
+        console.log(`Error fetching movie details: ${error}`);
       }
       setLoading(false);
     };
 
-    getShowDetails();
+    getMovieDetails();
   }, [id, isMovieInWatchList]);
-
   const handleWatchListToggle = () => {
-    const showAsMovieObject = {
-      ...show,
-      title: show.name, 
-      release_date: show.first_air_date,
-      media_type: "tv",
-    };
-
     if (inWatchList) {
-      removeMovie(show.id);
+      removeMovie(movie.id);
       setInWatchList(false);
     } else {
-      addMovie(showAsMovieObject);
+      addMovie(movie);
       setInWatchList(true);
     }
   };
-
-  // Provider logic
   let uniqueProviders = [];
   if (providers) {
     const allProviderLinks = [
@@ -124,7 +122,6 @@ const TvShowDetails = () => {
     uniqueProviders = Array.from(providerMap.values());
   }
 
-  // Rating logic
   const formatRating = (rating) => (rating * 10).toFixed(0);
 
   if (loading) {
@@ -134,50 +131,53 @@ const TvShowDetails = () => {
       </p>
     );
   }
-  if (!show) {
+  if (!movie) {
     return (
       <p className="h-screen w-full flex justify-center items-center text-lg">
-        TV Show not found.
+        Movie not found.
       </p>
     );
   }
 
   return (
     <div className="relative overflow-x-hidden">
+      {/* --- 1. Blurred Backdrop (FIXED to screen) --- */}
       <div
-        className="absolute top-0 left-0 w-full h-full bg-cover bg-center blur-lg opacity-70"
+        className="absolute top-0 left-0 w-full h-full bg-cover bg-center blur-lg opacity-100"
         style={{
-          backgroundImage: `url(${BACKDROP_BASE_URL}${show.backdrop_path})`,
+          backgroundImage: `url(${BACKDROP_BASE_URL}${movie.backdrop_path})`,
         }}
       />
-      <div className="absolute top-0 left-0 w-full h-full bg-slate-900/10" />
+      <div className="absolute top-0 left-0 w-full h-full bg-slate-900/40" />
 
       {/* --- 2. Main Content (Wider Layout) --- */}
       <div className="relative z-10 p-4 md:p-12 lg:p-16">
         <div className="container mx-auto">
           <div className="flex flex-col md:flex-row gap-8">
             {/* --- Left Column: Poster --- */}
-            <div className="w-full md:w-auto">
+            <div className="w-full md:w-1/2 md:max-w-sm shrink-0">
               <img
-                src={`${IMAGE_BASE_URL}${show.poster_path}`}
-                alt={show.name}
-                className="rounded-xl w-full shadow-2xl h-1/2 object-cover"
+                src={`${IMAGE_BASE_URL}${movie.poster_path}`}
+                alt={movie.title}
+                className="rounded-xl w-full shadow-2xl h-3/4 object-cover"
               />
             </div>
 
             {/* --- Right Column: Info --- */}
-            <div className="md:w-2/3 text-white overflow-hidden">
+            <div className=" text-white overflow-hidden">
               <h1 className="text-4xl md:text-5xl font-bold mb-2">
-                {show.name}
+                {movie.title}
               </h1>
               <p className="text-lg text-gray-300 italic mb-4">
-                {show.tagline}
+                {movie.tagline}
               </p>
 
-              <div className="flex items-center gap-6 mb-6 flex-wrap">
+              <div className="flex items-center gap-6 mb-6">
+                {/* --- Rating --- */}
                 <div className="flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full text-xl font-bold shrink-0">
-                  {formatRating(show.vote_average)}%
+                  {formatRating(movie.vote_average)}%
                 </div>
+                {/* --- Trailer Button --- */}
                 {trailer && (
                   <button
                     onClick={() => setShowModal(true)}
@@ -186,6 +186,7 @@ const TvShowDetails = () => {
                     <FaPlay /> Watch Trailer
                   </button>
                 )}
+                {/* --- WatchList Button --- */}
                 <button
                   onClick={handleWatchListToggle}
                   className={`flex italic items-center gap-2 text-lg font-semibold px-4 py-2 rounded-lg transition-colors
@@ -195,16 +196,14 @@ const TvShowDetails = () => {
                         : "bg-gray-700 hover:bg-gray-600"
                     }`}
                 >
-                  {/* --- "Add to WatchList" --- */}
                   {inWatchList ? <FaCheck /> : <FaPlus />}
                   {inWatchList ? "In WatchList" : "Add to WatchList"}
                 </button>
               </div>
 
               <h2 className="text-2xl font-bold mb-2">Overview</h2>
-              <p className="text-gray-200 md:text-lg mb-6">{show.overview}</p>
-
-              <InfoBar show={show} />
+              <p className="text-gray-200 md:text-lg mb-6">{movie.overview}</p>
+              <InfoBar movie={movie} />
 
               {/* --- "Where to Watch" --- */}
               <div className="mb-6">
@@ -244,31 +243,33 @@ const TvShowDetails = () => {
                 )}
               </div>
 
-              {/* --- Created By --- */}
-              {show.created_by && show.created_by.length > 0 && (
-                <div className="mb-6">
-                  <h2 className="text-2xl font-bold mb-3">Created By</h2>
-                  <p className="text-gray-300 text-lg">
-                    {show.created_by.map((creator) => creator.name).join(", ")}
-                  </p>
-                </div>
-              )}
+                {/* Crew */}
+              <div className="flex gap-8 my-10">
+                {crew.director && (
+                  <div>
+                    <h3 className="text-lg md:text-2xl  font-bold">Director</h3>
+                    <p className="text-gray-300 md:text-xl">
+                      {crew.director.name}
+                    </p>
+                  </div>
+                )}
 
-              {/* --- Writer --- */}
-              {crew.writer && (
-                <div className="mb-6">
-                  <h3 className="text-2xl font-bold mb-3">Writer</h3>
-                  <p className="text-gray-300 text-lg">{crew.writer.name}</p>
-                </div>
-              )}
-
+                {crew.writer && (
+                  <div>
+                    <h3 className="text-lg md:text-2xl  font-bold">Writer</h3>
+                    <p className="text-gray-300 md:text-xl">
+                      {crew.writer.name}
+                    </p>
+                  </div>
+                )}
+              </div>
               {/* Cast */}
               <h2 className="text-2xl font-bold mb-3">Top Cast</h2>
-              <div className="flex flex-wrap gap-1 md:gap-5 p-2 w-full">
-                {show.credits.cast.slice(0, 15).map((actor) => (
+              <div className="flex flex-wrap gap-1 md:gap-5 p-2">
+                {movie.credits.cast.slice(0, 10).map((actor) => (
                   <div
                     key={actor.cast_id}
-                    className="text-center md:w-40 w-24  mb-4"
+                    className="text-center w-24 md:w-40 shrink-0 mb-4"
                   >
                     <Link to={`/person/${actor.id}`}>
                       <img
@@ -278,13 +279,13 @@ const TvShowDetails = () => {
                             : "https://placehold.co/200x300/0f172a/ffffff?text=N/A"
                         }
                         alt={actor.name}
-                        className="w-20 h-20 md:w-30 md:h-50 object-cover object-center rounded-full mx-auto mb-1 transition-transform duration-200 hover:scale-110"
+                        className="w-20 h-20 md:w-30 md:h-40 object-cover rounded-full mx-auto mb-1 transition-transform duration-200 hover:scale-110"
                       />
                     </Link>
                     <p className="text-sm md:text-xl leading-5 font-semibold">
                       {actor.name}
                     </p>
-                    <p className="text-xs md:text-lg text-gray-400 italic">
+                    <p className="text-xs  md:text-lg text-gray-400 italic">
                       {actor.character}
                     </p>
                   </div>
@@ -294,6 +295,7 @@ const TvShowDetails = () => {
           </div>
         </div>
       </div>
+      {/* Trailer Modal */}
       {showModal && trailer && (
         <VideoModal
           videoId={trailer.key}
@@ -304,4 +306,4 @@ const TvShowDetails = () => {
   );
 };
 
-export default TvShowDetails;
+export default MovieDetails;

@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import api from "../api/tmdbApi";
-import MovieCard from "../Components/MovieCard";
+import api from "../../api/tmdbApi";
+import MovieCard from "../../Components/MovieCard";
+const currentYear = new Date().getFullYear()
 
-const UpcomingMovies = () => {
+const TopRatedMovies = () => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -24,11 +25,14 @@ const UpcomingMovies = () => {
     [loading, hasMore]
   );
 
-  const getUpcomingMoviesDetails = async () => {
+  const getTopRatedMovies = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/movie/upcoming", {
+      const res = await api.get("/discover/movie", {
         params: {
+            primary_release_year: currentYear,
+          sort_by: "vote_average.desc",
+          "vote_count.gte": 500,
           page: page,
         },
       });
@@ -47,7 +51,7 @@ const UpcomingMovies = () => {
 
       setHasMore(res.data.results.length > 0);
     } catch (error) {
-      console.log(`error fetching upcoming movies: ${error}`);
+      console.log(`error fetching top rated movies: ${error}`);
     }
     setLoading(false);
   };
@@ -55,18 +59,16 @@ const UpcomingMovies = () => {
   console.log(movies);
 
   useEffect(() => {
-    getUpcomingMoviesDetails();
+    getTopRatedMovies();
   }, [page]);
 
   return (
     <div className="container mx-auto p-4 md:p-8">
       <h1 className="text-3xl md:text-4xl font-bold text-white mb-6">
-        Upcoming Movies
+        All Top Rated Movies
       </h1>
       {loading && movies.length === 0 ? (
-        <p className="text-gray-400 flex justify-center items-center h-[60dvh] text-2xl md:text-3xl font-bold">
-          Loading movies...
-        </p>
+        <p className="text-gray-400 flex justify-center items-center h-[60dvh] text-2xl md:text-3xl font-bold">Loading movies...</p>
       ) : (
         <div className="grid grid-cols-2  md:grid-cols-3 lg:grid-cols-4 md:gap-6 gap-4">
           {movies.map((movie, idx) => {
@@ -91,4 +93,4 @@ const UpcomingMovies = () => {
   );
 };
 
-export default UpcomingMovies;
+export default TopRatedMovies;

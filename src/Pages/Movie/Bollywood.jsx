@@ -1,21 +1,17 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import api from "../api/tmdbApi";
-import MovieCard from "../Components/MovieCard";
-import HeroCarousel from "../Components/HeroCarousel";
+import api from "../../api/tmdbApi";
+import MovieCard from "../../Components/MovieCard";
+import HeroCarousel from "../../Components/HeroCarousel";
 import { MdError } from "react-icons/md";
 
-const Anime = () => {
-  // -- 1. State variables --
+const Bollywood = () => {
   const [content, setContent] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [err, setErr] = useState(null);
-
   const observer = useRef();
 
-  // -- 2. Functions --
-  // -- 2.1. Intersection Observer it's load more content when the last movie is visible --
   const lastElementRef = useCallback(
     (node) => {
       if (loading) return;
@@ -31,24 +27,21 @@ const Anime = () => {
     [loading, hasMore]
   );
 
-  // -- 2.2. Fetch content --
-  const getAnimeContent = async () => {
+  const getBollywoodContent = async () => {
     setLoading(true);
     try {
       const [movieRes, tvRes] = await Promise.all([
         api.get("/discover/movie", {
           params: {
-            with_genres: "16",
-            with_origin_country: "JP",
-            sort_by: "popularity.desc",
+            with_origin_country: "IN",
+            sort_by: "release_date.desc",
             "vote_count.gte": 100,
             page: page,
           },
         }),
         api.get("/discover/tv", {
           params: {
-            with_genres: "16",
-            with_origin_country: "JP",
+            with_origin_country: "IN",
             sort_by: "popularity.desc",
             "vote_count.gte": 100,
             page: page,
@@ -71,14 +64,14 @@ const Anime = () => {
 
       setHasMore(newMovies.length > 0 || newTvShows.length > 0);
     } catch (error) {
-      console.log(`error fetching Hollywood content: ${error}`);
+      console.log(`error fetching Bollywood content: ${error}`);
       setErr(error.message || "Failed to fetch movies. Please try again.");
     }
     setLoading(false);
   };
 
   useEffect(() => {
-    getAnimeContent();
+    getBollywoodContent();
   }, [page]);
 
   return (
@@ -102,7 +95,7 @@ const Anime = () => {
         ) : (
           <>
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-6">
-              Anime (Movies & Series)
+              BollyWood (Movies & Shows)
             </h1>
             <div className="grid grid-cols-2  md:grid-cols-3 lg:grid-cols-4 md:gap-6 gap-4">
               {content.map((item, idx) => {
@@ -132,4 +125,4 @@ const Anime = () => {
   );
 };
 
-export default Anime;
+export default Bollywood;

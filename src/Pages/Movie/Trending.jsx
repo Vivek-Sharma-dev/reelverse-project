@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import api from "../api/tmdbApi";
-import MovieCard from "../Components/MovieCard";
-const currentYear = new Date().getFullYear()
+import api from "../../api/tmdbApi";
+import MovieCard from "../../Components/MovieCard";
 
-const TopRatedMovies = () => {
+const Trending = () => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -25,23 +24,19 @@ const TopRatedMovies = () => {
     [loading, hasMore]
   );
 
-  const getTopRatedMovies = async () => {
+
+  const getTrendingMovies = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/discover/movie", {
+      // --- THIS IS THE NEW API CALL ---
+      const res = await api.get("/movie/now_playing", {
         params: {
-            primary_release_year: currentYear,
-          sort_by: "vote_average.desc",
-          "vote_count.gte": 500,
           page: page,
         },
       });
 
       setMovies((prevMovies) => {
-        const newMovies = [
-          ...prevMovies,
-          ...res.data.results.filter((movie) => movie),
-        ];
+        const newMovies = res.data.results.filter((movie) => movie);
         const existingMovieIds = new Set(prevMovies.map((movie) => movie.id));
         const uniqueMovies = newMovies.filter(
           (movie) => !existingMovieIds.has(movie.id)
@@ -51,7 +46,7 @@ const TopRatedMovies = () => {
 
       setHasMore(res.data.results.length > 0);
     } catch (error) {
-      console.log(`error fetching top rated movies: ${error}`);
+      console.log(`error fetching trending movies: ${error}`);
     }
     setLoading(false);
   };
@@ -59,13 +54,13 @@ const TopRatedMovies = () => {
   console.log(movies);
 
   useEffect(() => {
-    getTopRatedMovies();
+    getTrendingMovies();
   }, [page]);
 
   return (
     <div className="container mx-auto p-4 md:p-8">
       <h1 className="text-3xl md:text-4xl font-bold text-white mb-6">
-        All Top Rated Movies
+        All Trending Movies
       </h1>
       {loading && movies.length === 0 ? (
         <p className="text-gray-400 flex justify-center items-center h-[60dvh] text-2xl md:text-3xl font-bold">Loading movies...</p>
@@ -93,4 +88,4 @@ const TopRatedMovies = () => {
   );
 };
 
-export default TopRatedMovies;
+export default Trending;
