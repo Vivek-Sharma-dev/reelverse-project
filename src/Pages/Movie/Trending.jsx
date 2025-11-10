@@ -3,7 +3,7 @@ import api from "../../api/tmdbApi";
 import MovieCard from "../../Components/MovieCard";
 
 const Trending = () => {
-  const [movies, setMovies] = useState([]);
+  const [content, setContent] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -24,50 +24,68 @@ const Trending = () => {
     [loading, hasMore]
   );
 
-
-  const getTrendingMovies = async () => {
+  const getTrendingContent = async () => {
     setLoading(true);
     try {
       // --- THIS IS THE NEW API CALL ---
+      const [movieRes, tvRes] = await Promise.all([
+        api.get("/movie/now_playing", {
+          params: {
+            page: page,
+          },
+        }),
+        api.get("/tv/airing_today", {
+          params: {
+            page: page,
+          },
+        }),
+      ]);
+
+      const newMovies = movieRes.data.results.filter((item) => item);
+      const newTvShows = tvRes.data.results.filter((item) => item);
+      const combinedContent = [...newMovies, ...newTvShows];
+
+      combinedContent.sort((a, b) => b.popularity - a.popularity);
       const res = await api.get("/movie/now_playing", {
         params: {
           page: page,
         },
       });
 
-      setMovies((prevMovies) => {
-        const newMovies = res.data.results.filter((movie) => movie);
-        const existingMovieIds = new Set(prevMovies.map((movie) => movie.id));
-        const uniqueMovies = newMovies.filter(
-          (movie) => !existingMovieIds.has(movie.id)
+       setContent((prevContent) => {
+        const existingIds = new Set(prevContent.map(c => `${c.id}-${c.media_type || (c.title ? 'movie' : 'tv')}`));
+        const uniqueNewContent = combinedContent.filter(
+          c => !existingIds.has(`${c.id}-${c.media_type || (c.title ? 'movie' : 'tv')}`)
         );
-        return [...prevMovies, ...uniqueMovies];
+        return [...prevContent, ...uniqueNewContent];
       });
 
       setHasMore(res.data.results.length > 0);
     } catch (error) {
-      console.log(`error fetching trending movies: ${error}`);
+      console.log(`error fetching trending content: ${error}`);
     }
     setLoading(false);
   };
 
-  console.log(movies);
+  console.log(content);
 
   useEffect(() => {
-    getTrendingMovies();
+    getTrendingContent();
   }, [page]);
 
   return (
     <div className="container mx-auto p-4 md:p-8">
       <h1 className="text-3xl md:text-4xl font-bold text-white mb-6">
-        All Trending Movies
+        All Trending content
       </h1>
-      {loading && movies.length === 0 ? (
-        <p className="text-gray-400 flex justify-center items-center h-[60dvh] text-2xl md:text-3xl font-bold">Loading movies...</p>
+      {loading && content.length === 0 ? (
+        <p className="text-gray-400 flex justify-center items-center h-[60dvh] text-2xl md:text-3xl font-bold">
+          Loading content...
+        </p>
       ) : (
         <div className="grid grid-cols-2  md:grid-cols-3 lg:grid-cols-4 md:gap-6 gap-4">
-          {movies.map((movie, idx) => {
-            if (movies.length === idx + 1) {
+          {content.map((movie, idx) => {
+            if (content.length === idx + 1) {
               return (
                 <div ref={lastMovieElementRef} key={movie.id}>
                   <MovieCard movie={movie} />
@@ -79,9 +97,9 @@ const Trending = () => {
           })}
         </div>
       )}
-      {loading && movies.length > 0 && (
+      {loading && content.length > 0 && (
         <p className="text-gray-400 text-lg w-full text-center mt-8">
-          Loading more movies...
+          Loading more content...
         </p>
       )}
     </div>

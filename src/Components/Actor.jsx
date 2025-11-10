@@ -8,7 +8,7 @@ const Actor = ({ actor }) => {
     : "https://placehold.co/600x281/0f172a/ffffff?text=No+Image";
   return (
     <Link to={`/person/${actor.id}`} className="text-center text-white group">
-      <div className="relative w-48 h-48 mx-auto">
+      <div className="relative w-30 md:w-48 h-30 md:h-48 mx-auto">
         <img
           src={imageUrl}
           alt={actor.name}

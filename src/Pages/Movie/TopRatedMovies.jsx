@@ -4,7 +4,7 @@ import MovieCard from "../../Components/MovieCard";
 const currentYear = new Date().getFullYear()
 
 const TopRatedMovies = () => {
-  const [movies, setMovies] = useState([]);
+   const [content, setContent] = useState([]); // Renamed 'movies' to 'content'
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -14,7 +14,6 @@ const TopRatedMovies = () => {
     (node) => {
       if (loading) return;
       if (observer.current) observer.current.disconnect();
-
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasMore) {
           setPage((prevPage) => prevPage + 1);
@@ -25,41 +24,57 @@ const TopRatedMovies = () => {
     [loading, hasMore]
   );
 
-  const getTopRatedMovies = async () => {
+  const getTopRatedContent = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/discover/movie", {
-        params: {
-            primary_release_year: currentYear,
-          sort_by: "vote_average.desc",
-          "vote_count.gte": 500,
-          page: page,
-        },
-      });
+      // --- THIS IS THE FIX ---
+      const movieParams = {
+        primary_release_year: currentYear,
+        sort_by: "vote_average.desc",
+        "vote_count.gte": 500,
+        page: page,
+      };
+      const tvParams = {
+        first_air_date_year: currentYear,
+        sort_by: "vote_average.desc",
+        "vote_count.gte": 500,
+        page: page,
+      };
 
-      setMovies((prevMovies) => {
-        const newMovies = [
-          ...prevMovies,
-          ...res.data.results.filter((movie) => movie),
-        ];
-        const existingMovieIds = new Set(prevMovies.map((movie) => movie.id));
-        const uniqueMovies = newMovies.filter(
-          (movie) => !existingMovieIds.has(movie.id)
+      const [movieRes, tvRes] = await Promise.all([
+        api.get("/discover/movie", { params: movieParams }),
+        api.get("/discover/tv", { params: tvParams })
+      ]);
+      // --- END FIX ---
+
+      const newMovies = movieRes.data.results
+        .filter((item) => item)
+        .map(m => ({ ...m, media_type: 'movie' }));
+        
+      const newTvShows = tvRes.data.results
+        .filter((item) => item)
+        .map(t => ({ ...t, media_type: 'tv' }));
+
+      const combinedContent = [...newMovies, ...newTvShows];
+      combinedContent.sort((a, b) => b.popularity - a.popularity); // Sort by popularity
+
+      setContent((prevContent) => {
+        const existingIds = new Set(prevContent.map(c => `${c.id}-${c.media_type || (c.title ? 'movie' : 'tv')}`));
+        const uniqueNewContent = combinedContent.filter(
+          c => !existingIds.has(`${c.id}-${c.media_type || (c.title ? 'movie' : 'tv')}`)
         );
-        return [...prevMovies, ...uniqueMovies];
+        return [...prevContent, ...uniqueNewContent];
       });
 
-      setHasMore(res.data.results.length > 0);
+      setHasMore(newMovies.length > 0 || newTvShows.length > 0);
     } catch (error) {
-      console.log(`error fetching top rated movies: ${error}`);
+      console.log(`error fetching top rated: ${error}`);
     }
     setLoading(false);
   };
 
-  console.log(movies);
-
   useEffect(() => {
-    getTopRatedMovies();
+    getTopRatedContent();
   }, [page]);
 
   return (
@@ -67,12 +82,12 @@ const TopRatedMovies = () => {
       <h1 className="text-3xl md:text-4xl font-bold text-white mb-6">
         All Top Rated Movies
       </h1>
-      {loading && movies.length === 0 ? (
-        <p className="text-gray-400 flex justify-center items-center h-[60dvh] text-2xl md:text-3xl font-bold">Loading movies...</p>
+      {loading && content.length === 0 ? (
+        <p className="text-gray-400 flex justify-center items-center h-[60dvh] text-2xl md:text-3xl font-bold">Loading content...</p>
       ) : (
         <div className="grid grid-cols-2  md:grid-cols-3 lg:grid-cols-4 md:gap-6 gap-4">
-          {movies.map((movie, idx) => {
-            if (movies.length === idx + 1) {
+          {content.map((movie, idx) => {
+            if (content.length === idx + 1) {
               return (
                 <div ref={lastMovieElementRef} key={movie.id}>
                   <MovieCard movie={movie} />
@@ -84,7 +99,7 @@ const TopRatedMovies = () => {
           })}
         </div>
       )}
-      {loading && movies.length > 0 && (
+      {loading && content.length > 0 && (
         <p className="text-gray-400 text-lg w-full text-center mt-8">
           Loading more movies...
         </p>

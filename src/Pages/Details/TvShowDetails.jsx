@@ -155,18 +155,18 @@ const TvShowDetails = () => {
       {/* --- 2. Main Content (Wider Layout) --- */}
       <div className="relative z-10 p-4 md:p-12 lg:p-16">
         <div className="container mx-auto">
-          <div className="flex flex-col md:flex-row gap-8">
+          <div className="flex flex-col lg:flex-row gap-8">
             {/* --- Left Column: Poster --- */}
             <div className="w-full md:w-auto">
               <img
                 src={`${IMAGE_BASE_URL}${show.poster_path}`}
                 alt={show.name}
-                className="rounded-xl w-full shadow-2xl h-1/2 object-cover"
+                className="rounded-xl w-full md:h-auto shadow-2xl lg:h-11/12 object-cover"
               />
             </div>
 
             {/* --- Right Column: Info --- */}
-            <div className="md:w-2/3 text-white overflow-hidden">
+            <div className="lg:w-2/3 text-white overflow-hidden">
               <h1 className="text-4xl md:text-5xl font-bold mb-2">
                 {show.name}
               </h1>
