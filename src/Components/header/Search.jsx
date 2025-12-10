@@ -1,11 +1,11 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
 const Search = () => {
   const navigate = useNavigate();
   const inputRef = useRef();
 
-// handle search
+
   const handleSearch = (e) => {
     e.preventDefault();
     const query = e.target.elements.search.value;

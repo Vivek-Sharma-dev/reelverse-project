@@ -1,6 +1,6 @@
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
-import { MdEmail } from 'react-icons/md'; // Added Email icon
-import { Link, NavLink } from 'react-router-dom'; // Added Link component from React Router
+import { MdEmail } from 'react-icons/md';
+import { NavLink } from 'react-router-dom';
 import Logo from './header/Logo';
 
 const Footer = () => {

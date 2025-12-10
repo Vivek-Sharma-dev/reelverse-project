@@ -1,15 +1,15 @@
 import React from 'react';
-import { IoClose } from 'react-icons/io5'; // Get a close icon
+import { IoClose } from 'react-icons/io5';
 
 const VideoModal = ({ videoId, closeModal }) => {
   return (
     <div 
       className="fixed inset-0 z-50 flex justify-center items-center bg-black/70 backdrop-blur-sm"
-      onClick={closeModal} // Click outside to close
+      onClick={closeModal} 
     >
       <div 
         className="relative w-full max-w-3xl aspect-video rounded-lg overflow-hidden shadow-2xl"
-        onClick={(e) => e.stopPropagation()} // Stop click from bubbling up to the overlay
+        onClick={(e) => e.stopPropagation()} 
       >
         {/* Close Button */}
         <button

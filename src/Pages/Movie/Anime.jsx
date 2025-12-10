@@ -1,8 +1,11 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import{ useEffect, useState, useRef, useCallback } from "react";
 import api from "../../api/tmdbApi";
 import MovieCard from "../../Components/MovieCard";
 import HeroCarousel from "../../Components/HeroCarousel";
-import { MdError } from "react-icons/md";
+import Lottie from 'lottie-react';
+import loadingAnimation from '../../assets/animations/loading.json'
+import infinityLoading from '../../assets/animations/loadingInfinity.json'
+import error from '../../assets/animations/Error.json'
 
 const Anime = () => {
   // -- 1. State variables --
@@ -86,18 +89,13 @@ const Anime = () => {
       <HeroCarousel movies={content.slice(0, 5)} />
       <div className="container mx-auto p-4 md:p-8">
         {loading && content.length === 0 ? (
-          <p className="text-gray-400 flex justify-center items-center h-[60dvh] text-2xl md:text-3xl font-bold">
-            Loading content...
-          </p>
+          <div className="h-[60dvh] flex justify-center items-center">
+            <Lottie animationData={loadingAnimation} loop={true} />
+          </div>
         ) : err ? (
           // --- B. ERROR STATE ---
-          <div className="text-red-400 flex flex-col justify-center items-center h-[60dvh] text-2xl md:text-3xl font-bold">
-            <MdError size={60} className="mb-4" />
-            <p>Error: {err}</p>
-            <p className="text-lg text-gray-400 mt-2">
-              Could not load data. Please check your API key or network
-              connection.
-            </p>
+          <div>
+           <Lottie animationData={error} loop={true} className="lg:h-[80vh]"/>
           </div>
         ) : (
           <>
@@ -123,8 +121,8 @@ const Anime = () => {
           </>
         )}
         {loading && content.length > 0 && (
-          <p className="text-gray-400 text-lg w-full text-center mt-8">
-            Loading more content...
+          <p className=" flex justify-center mt-8">
+            <Lottie animationData={infinityLoading} loop={true} style={{width:"100px",background: "transparent"}}  />
           </p>
         )}
       </div>

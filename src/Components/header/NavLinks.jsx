@@ -1,19 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import { FaBars, FaTimes } from "react-icons/fa";
-{
-  /* import icons */
-}
+import { FaTimes } from "react-icons/fa";
 import { HiMenuAlt3 } from "react-icons/hi";
-{
-  /* import icons */
-}
 import { NavLink } from "react-router-dom";
-{
-  /* import NavLink */
-}
+
 
 const useClickOutside = (handler) => {
-  let domNode = useRef(); // create a ref object
+  let domNode = useRef(); 
 
   // useEffect use for add and remove event listener on the document for closing the menu
   useEffect(() => {
@@ -33,13 +25,9 @@ const useClickOutside = (handler) => {
   return domNode;
 };
 
-// This component contains the navigation links
 
 const NavLinks = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  {
-    /* state for open and close menu */
-  }
 
   // This function is called when the menu icon is clicked
   let menuRef = useClickOutside(() => {

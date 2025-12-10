@@ -1,6 +1,9 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import{ useEffect, useState, useRef, useCallback } from "react";
 import api from "../../api/tmdbApi";
 import MovieCard from "../../Components/MovieCard";
+import Lottie from "lottie-react";
+import loadingAnimation from "../../assets/animations/loading.json";
+import infinityLoading from '../../assets/animations/loadingInfinity.json'
 
 const Trending = () => {
   const [content, setContent] = useState([]);
@@ -27,7 +30,7 @@ const Trending = () => {
   const getTrendingContent = async () => {
     setLoading(true);
     try {
-      // --- THIS IS THE NEW API CALL ---
+     
       const [movieRes, tvRes] = await Promise.all([
         api.get("/movie/now_playing", {
           params: {
@@ -79,8 +82,8 @@ const Trending = () => {
         All Trending content
       </h1>
       {loading && content.length === 0 ? (
-        <p className="text-gray-400 flex justify-center items-center h-[60dvh] text-2xl md:text-3xl font-bold">
-          Loading content...
+        <p className="flex justify-center items-center h-[60vh]">
+          <Lottie animationData={loadingAnimation} loop={true} />
         </p>
       ) : (
         <div className="grid grid-cols-2  md:grid-cols-3 lg:grid-cols-4 md:gap-6 gap-4">
@@ -98,9 +101,9 @@ const Trending = () => {
         </div>
       )}
       {loading && content.length > 0 && (
-        <p className="text-gray-400 text-lg w-full text-center mt-8">
-          Loading more content...
-        </p>
+        <p className=" flex justify-center mt-8">
+            <Lottie animationData={infinityLoading} loop={true} style={{width:"100px",background: "transparent"}}  />
+          </p>
       )}
     </div>
   );

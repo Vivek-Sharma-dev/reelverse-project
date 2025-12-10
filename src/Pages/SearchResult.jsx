@@ -1,8 +1,10 @@
-import React, { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import MovieCard from "../Components/MovieCard";
-import api from "../api/tmdbApi"; // Import the api instance
+import api from "../api/tmdbApi"; 
 import Actor from "../Components/Actor";
+import searchingAnimation from '../assets/animations/searching.json'
+import Lottie from "lottie-react";
 
 const SearchResult = () => {
   const [movies, setMovies] = useState([]);
@@ -55,8 +57,8 @@ const SearchResult = () => {
       </h1>
 
       {loading && (
-        <p className="text-gray-400 flex justify-center items-center h-[60dvh] text-2xl md:text-3xl font-bold">
-          Searching...
+        <p className="flex justify-center items-center h-[60vh]">
+          <Lottie animationData={searchingAnimation} loop={true} style={{width: "200px"}}/>
         </p>
       )}
 

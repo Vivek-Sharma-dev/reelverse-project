@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../../api/tmdbApi";
 import { FaPlay, FaPlus, FaCheck } from "react-icons/fa";
 import { useWatchList } from "../../Context/WatchListContext";
 import VideoModal from "../../Components/VideoModal";
 import { MdAccessTime } from "react-icons/md";
+import loadingAnimation from "../../assets/animations/loading.json";
+import Lottie from "lottie-react";
 
 const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
 const BACKDROP_BASE_URL = "https://image.tmdb.org/t/p/original";
@@ -129,8 +131,8 @@ const TvShowDetails = () => {
 
   if (loading) {
     return (
-      <p className="h-screen w-full flex justify-center items-center text-lg">
-        Loading details...
+      <p className="h-[60vh] flex justify-center items-center text-lg">
+        <Lottie animationData={loadingAnimation} />
       </p>
     );
   }

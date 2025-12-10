@@ -9,40 +9,36 @@ import "swiper/css/effect-fade";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-
-const BACKDROP_BASE_URL = "https://image.tmdb.org/t/p/original";   // Base URL for backdrop images
+const BACKDROP_BASE_URL = "https://image.tmdb.org/t/p/original"; // Base URL for backdrop images
 
 const HeroSlide = ({ movie }) => {
   return (
     <>
-      <div className="relative w-full h-[50vh] md:h-[70vh]">
-        <img
-          src={`${BACKDROP_BASE_URL}${movie.backdrop_path}`}
-          alt={movie.title}
-          className="w-full h-full object-cover object-top"
-        />
+      <Link
+        to={`/movie/${movie.id}`}
+      >
+        <div className="relative w-full h-[50vh] md:h-[70vh]">
+          <img
+            src={`${BACKDROP_BASE_URL}${movie.backdrop_path}`}
+            alt={movie.title}
+            className="w-full h-full object-cover object-top"
+          />
 
-        <div className="absolute inset-0 bg-linear-to-t from-slate-900 via-transparent to-transparent" />
-        <div className="absolute inset-0 bg-linear-to-r from-slate-900/50 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-slate-900 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-r from-slate-900/50 via-transparent to-transparent" />
 
-        <div className="absolute w-full bottom-5 flex justify-center md:bottom-15 p-4 z-10  ">
-          <div className="w-4/6 flex flex-col items-center gap-2 md:gap-5">
-            <h2 className="text-2xl text-center md:text-5xl font-bold text-white line-clamp-2 md:line-clamp-none">
-              {movie.title}
-            </h2>
-            <p className="text-gray-400 text-sm line-clamp-2 md:line-clamp-none md:text-xl text-center">
-              {movie.overview}
-            </p>
-
-            <Link
-              to={`/movie/${movie.id}`}
-              className="bg-blue-600 text-white text-sm md:text-lg font-bold py-2 px-4 md:px-6 md:py-3 rounded-lg transition-transform duration-300 hover:scale-105"
-            >
-              View Details
-            </Link>
+          <div className="absolute w-full bottom-5 flex justify-center md:bottom-15 p-4 z-10  ">
+            <div className="w-4/6 flex flex-col items-center gap-2 md:gap-5">
+              <h2 className="text-2xl text-center md:text-5xl font-bold text-white line-clamp-2 md:line-clamp-none">
+                {movie.title}
+              </h2>
+              <p className="text-gray-400 text-sm line-clamp-2 md:line-clamp-none md:text-xl text-center">
+                {movie.overview}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      </Link>
     </>
   );
 };

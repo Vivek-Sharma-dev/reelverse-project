@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
+import{ useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import MovieCard from "../../Components/MovieCard";
 import api from "../../api/tmdbApi";
+import loadingAnimation from "../../assets/animations/loading.json";
+import Lottie from "lottie-react";
 const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
 
 const ActorDetails = () => {
@@ -43,8 +45,8 @@ const ActorDetails = () => {
 
   if (loading) {
     return (
-      <p className="h-[60vh] w-full flex justify-center items-center text-lg font-bold">
-        Loading...
+      <p className="h-[60vh] flex justify-center items-center">
+        <Lottie animationData={loadingAnimation} loop={true} />
       </p>
     );
   }

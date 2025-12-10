@@ -1,10 +1,14 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import api from "../../api/tmdbApi";
 import MovieCard from "../../Components/MovieCard";
-const currentYear = new Date().getFullYear()
+import loadingAnimation from "../../assets/animations/loading.json";
+import Lottie from "lottie-react";
+import infinityLoading from '../../assets/animations/loadingInfinity.json'
+
+const currentYear = new Date().getFullYear();
 
 const TopRatedMovies = () => {
-   const [content, setContent] = useState([]); // Renamed 'movies' to 'content'
+  const [content, setContent] = useState([]); 
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -27,7 +31,6 @@ const TopRatedMovies = () => {
   const getTopRatedContent = async () => {
     setLoading(true);
     try {
-      // --- THIS IS THE FIX ---
       const movieParams = {
         primary_release_year: currentYear,
         sort_by: "vote_average.desc",
@@ -43,25 +46,31 @@ const TopRatedMovies = () => {
 
       const [movieRes, tvRes] = await Promise.all([
         api.get("/discover/movie", { params: movieParams }),
-        api.get("/discover/tv", { params: tvParams })
+        api.get("/discover/tv", { params: tvParams }),
       ]);
-      // --- END FIX ---
 
       const newMovies = movieRes.data.results
         .filter((item) => item)
-        .map(m => ({ ...m, media_type: 'movie' }));
-        
+        .map((m) => ({ ...m, media_type: "movie" }));
+
       const newTvShows = tvRes.data.results
         .filter((item) => item)
-        .map(t => ({ ...t, media_type: 'tv' }));
+        .map((t) => ({ ...t, media_type: "tv" }));
 
       const combinedContent = [...newMovies, ...newTvShows];
-      combinedContent.sort((a, b) => b.popularity - a.popularity); // Sort by popularity
+      combinedContent.sort((a, b) => b.popularity - a.popularity);
 
       setContent((prevContent) => {
-        const existingIds = new Set(prevContent.map(c => `${c.id}-${c.media_type || (c.title ? 'movie' : 'tv')}`));
+        const existingIds = new Set(
+          prevContent.map(
+            (c) => `${c.id}-${c.media_type || (c.title ? "movie" : "tv")}`
+          )
+        );
         const uniqueNewContent = combinedContent.filter(
-          c => !existingIds.has(`${c.id}-${c.media_type || (c.title ? 'movie' : 'tv')}`)
+          (c) =>
+            !existingIds.has(
+              `${c.id}-${c.media_type || (c.title ? "movie" : "tv")}`
+            )
         );
         return [...prevContent, ...uniqueNewContent];
       });
@@ -83,7 +92,9 @@ const TopRatedMovies = () => {
         All Top Rated Movies
       </h1>
       {loading && content.length === 0 ? (
-        <p className="text-gray-400 flex justify-center items-center h-[60dvh] text-2xl md:text-3xl font-bold">Loading content...</p>
+        <p className="flex justify-center items-center h-[60vh]">
+          <Lottie animationData={loadingAnimation} loop={true} />{" "}
+        </p>
       ) : (
         <div className="grid grid-cols-2  md:grid-cols-3 lg:grid-cols-4 md:gap-6 gap-4">
           {content.map((movie, idx) => {
@@ -100,9 +111,9 @@ const TopRatedMovies = () => {
         </div>
       )}
       {loading && content.length > 0 && (
-        <p className="text-gray-400 text-lg w-full text-center mt-8">
-          Loading more movies...
-        </p>
+         <p className=" flex justify-center mt-8">
+            <Lottie animationData={infinityLoading} loop={true} style={{width:"100px",background: "transparent"}}  />
+          </p>
       )}
     </div>
   );
