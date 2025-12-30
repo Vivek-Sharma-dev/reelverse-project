@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay, EffectFade } from "swiper/modules";
+import { ChevronsLeft, ChevronsRight } from "lucide-react";
 
 // Import Swiper styles
 import "swiper/css";
@@ -14,9 +15,7 @@ const BACKDROP_BASE_URL = "https://image.tmdb.org/t/p/original"; // Base URL for
 const HeroSlide = ({ movie }) => {
   return (
     <>
-      <Link
-        to={`/movie/${movie.id}`}
-      >
+      <Link to={`/movie/${movie.id}`}>
         <div className="relative w-full h-[50vh] md:h-[70vh]">
           <img
             src={`${BACKDROP_BASE_URL}${movie.backdrop_path}`}
@@ -44,10 +43,12 @@ const HeroSlide = ({ movie }) => {
 };
 
 const HeroCarousel = ({ movies }) => {
+  const prevRef = useRef(null);
+  const nextRef = useRef(null);
   if (!movies || movies.length === 0) return null;
 
   return (
-    <div className="w-full mb-12">
+    <div className="w-full mb-12 relative">
       <Swiper
         modules={[Autoplay, Pagination, Navigation, EffectFade]}
         spaceBetween={0}
@@ -60,16 +61,38 @@ const HeroCarousel = ({ movies }) => {
         pagination={{
           clickable: true,
         }}
-        navigation={true}
+        navigation={{
+          nextEl: nextRef.current,
+          prevEl: prevRef.current,
+        }}
+        onBeforeInit={(swiper) => {
+          swiper.params.navigation.prevEl = prevRef.current;
+          swiper.params.navigation.nextEl = nextRef.current;
+        }}
         effect="fade"
+        speed={800}
         className="w-full h-full px-50"
       >
         {movies.map((movie) => (
-          <SwiperSlide key={movie.id}>
+          <SwiperSlide key={movie.id} className="pb-10">
             <HeroSlide movie={movie} />
           </SwiperSlide>
         ))}
       </Swiper>
+      <div className="">
+        <button
+          ref={prevRef}
+          className="hero-prev bg-white/20 top-1/2 z-50 rounded-full p-3 absolute left-20 cursor-pointer"
+        >
+          <ChevronsLeft size={40} />
+        </button>
+        <button
+          ref={nextRef}
+          className="hero-next bg-white/20 top-1/2 z-50 rounded-full p-3 absolute right-20 cursor-pointer"
+        >
+          <ChevronsRight size={40} />
+        </button>
+      </div>
     </div>
   );
 };
