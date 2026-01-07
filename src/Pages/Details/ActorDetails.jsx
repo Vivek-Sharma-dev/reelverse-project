@@ -1,4 +1,4 @@
-import{ useEffect, useState } from "react";
+import{ useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import MovieCard from "../../Components/MovieCard";
 import api from "../../api/tmdbApi";
@@ -13,7 +13,7 @@ const ActorDetails = () => {
   const [loading, setLoading] = useState(true);
   const [showFullBio, setShowFullBio] = useState(false);
 
-  const getActorDetails = async () => {
+  const getActorDetails = useCallback( async () => {
     setLoading(true);
     try {
       const res = await api.get(`/person/${id}`, {
@@ -38,16 +38,16 @@ const ActorDetails = () => {
       console.log(`Error fetching actor details: ${error}`);
     }
     setLoading(false);
-  };
+  }, [id]);
   useEffect(() => {
     getActorDetails();
-  }, [id]);
+  }, [getActorDetails]);
 
   if (loading) {
     return (
-      <p className="h-[60vh] flex justify-center items-center">
+      <div className="h-[60vh] flex justify-center items-center">
         <Lottie animationData={loadingAnimation} loop={true} />
-      </p>
+      </div>
     );
   }
 

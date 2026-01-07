@@ -1,9 +1,9 @@
-import{ useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import api from "../../api/tmdbApi";
 import MovieCard from "../../Components/MovieCard";
 import Lottie from "lottie-react";
 import loadingAnimation from "../../assets/animations/loading.json";
-import infinityLoading from '../../assets/animations/loadingInfinity.json'
+import infinityLoading from "../../assets/animations/loadingInfinity.json";
 
 const Trending = () => {
   const [content, setContent] = useState([]);
@@ -12,6 +12,13 @@ const Trending = () => {
   const [hasMore, setHasMore] = useState(true);
 
   const observer = useRef();
+
+  // const getYearList = () => {
+  //   const currentYear = new Date().getFullYear();
+  //   return Array.from({ length: 30 }, (_, index) => currentYear - index);
+  // };
+
+  // const yearList = getYearList();
   const lastMovieElementRef = useCallback(
     (node) => {
       if (loading) return;
@@ -27,10 +34,9 @@ const Trending = () => {
     [loading, hasMore]
   );
 
-  const getTrendingContent = async () => {
+  const getTrendingContent = useCallback( async () => {
     setLoading(true);
     try {
-     
       const [movieRes, tvRes] = await Promise.all([
         api.get("/movie/now_playing", {
           params: {
@@ -55,10 +61,17 @@ const Trending = () => {
         },
       });
 
-       setContent((prevContent) => {
-        const existingIds = new Set(prevContent.map(c => `${c.id}-${c.media_type || (c.title ? 'movie' : 'tv')}`));
+      setContent((prevContent) => {
+        const existingIds = new Set(
+          prevContent.map(
+            (c) => `${c.id}-${c.media_type || (c.title ? "movie" : "tv")}`
+          )
+        );
         const uniqueNewContent = combinedContent.filter(
-          c => !existingIds.has(`${c.id}-${c.media_type || (c.title ? 'movie' : 'tv')}`)
+          (c) =>
+            !existingIds.has(
+              `${c.id}-${c.media_type || (c.title ? "movie" : "tv")}`
+            )
         );
         return [...prevContent, ...uniqueNewContent];
       });
@@ -68,13 +81,11 @@ const Trending = () => {
       console.log(`error fetching trending content: ${error}`);
     }
     setLoading(false);
-  };
-
-  console.log(content);
+  }, [page]);
 
   useEffect(() => {
     getTrendingContent();
-  }, [page]);
+  }, [getTrendingContent]);
 
   return (
     <div className="container mx-auto p-4 md:p-8">
@@ -82,9 +93,9 @@ const Trending = () => {
         All Trending content
       </h1>
       {loading && content.length === 0 ? (
-        <p className="flex justify-center items-center h-[60vh]">
+        <div className="flex justify-center items-center h-[60vh]">
           <Lottie animationData={loadingAnimation} loop={true} />
-        </p>
+        </div>
       ) : (
         <div className="grid grid-cols-2  md:grid-cols-3 lg:grid-cols-4 md:gap-6 gap-4">
           {content.map((movie, idx) => {
@@ -102,8 +113,12 @@ const Trending = () => {
       )}
       {loading && content.length > 0 && (
         <p className=" flex justify-center mt-8">
-            <Lottie animationData={infinityLoading} loop={true} style={{width:"100px",background: "transparent"}}  />
-          </p>
+          <Lottie
+            animationData={infinityLoading}
+            loop={true}
+            style={{ width: "100px", background: "transparent" }}
+          />
+        </p>
       )}
     </div>
   );

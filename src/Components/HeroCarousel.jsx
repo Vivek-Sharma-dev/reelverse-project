@@ -43,6 +43,7 @@ const HeroSlide = ({ movie }) => {
 };
 
 const HeroCarousel = ({ movies }) => {
+  const isMobile = window.innerWidth <= 768;
   const prevRef = useRef(null);
   const nextRef = useRef(null);
   if (!movies || movies.length === 0) return null;
@@ -61,13 +62,20 @@ const HeroCarousel = ({ movies }) => {
         pagination={{
           clickable: true,
         }}
-        navigation={{
-          nextEl: nextRef.current,
-          prevEl: prevRef.current,
-        }}
-        onBeforeInit={(swiper) => {
-          swiper.params.navigation.prevEl = prevRef.current;
-          swiper.params.navigation.nextEl = nextRef.current;
+        onSwiper={(swiper) => {
+          setTimeout(() => {
+            if (
+              swiper.params.navigation &&
+              typeof swiper.params.navigation !== "boolean"
+            ) {
+              swiper.params.navigation.prevEl = prevRef.current;
+              swiper.params.navigation.nextEl = nextRef.current;
+
+              swiper.navigation.destroy();
+              swiper.navigation.init();
+              swiper.navigation.update();
+            }
+          });
         }}
         effect="fade"
         speed={800}
@@ -82,15 +90,15 @@ const HeroCarousel = ({ movies }) => {
       <div className="">
         <button
           ref={prevRef}
-          className="hero-prev bg-white/20 top-1/2 z-50 rounded-full p-3 absolute left-20 cursor-pointer"
+          className="hero-prev bg-white/20 top-[35%] hover:bg-white/40 active:scale-90 lg:top-1/2 z-50 rounded-full p-3 absolute left-5 lg:left-20 cursor-pointer transition-all duration-300"
         >
-          <ChevronsLeft size={40} />
+          <ChevronsLeft size={isMobile ? 30 : 40} />
         </button>
         <button
           ref={nextRef}
-          className="hero-next bg-white/20 top-1/2 z-50 rounded-full p-3 absolute right-20 cursor-pointer"
+          className="hero-next bg-white/20 top-[35%] hover:bg-white/40 active:scale-90 lg:top-1/2 z-50 rounded-full p-3 absolute right-5 lg:right-20 cursor-pointer transition-all duration-300"
         >
-          <ChevronsRight size={40} />
+          <ChevronsRight size={isMobile ? 30 : 40} />
         </button>
       </div>
     </div>

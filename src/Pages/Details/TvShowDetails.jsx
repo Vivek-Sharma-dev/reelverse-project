@@ -131,9 +131,9 @@ const TvShowDetails = () => {
 
   if (loading) {
     return (
-      <p className="h-[60vh] flex justify-center items-center text-lg">
+      <div className="h-[60vh] flex justify-center items-center text-lg">
         <Lottie animationData={loadingAnimation} />
-      </p>
+      </div>
     );
   }
   if (!show) {
@@ -147,7 +147,7 @@ const TvShowDetails = () => {
   return (
     <div className="relative overflow-x-hidden">
       <div
-        className="absolute top-0 left-0 w-full h-full bg-cover bg-center blur-lg opacity-70"
+        className="absolute top-0 left-0 w-full h-full bg-cover bg-center blur-lg opacity-40"
         style={{
           backgroundImage: `url(${BACKDROP_BASE_URL}${show.backdrop_path})`,
         }}
@@ -269,7 +269,7 @@ const TvShowDetails = () => {
               <div className="flex flex-wrap gap-1 md:gap-5 p-2 w-full">
                 {show.credits.cast.slice(0, 15).map((actor) => (
                   <div
-                    key={actor.cast_id}
+                    key={actor.id}
                     className="text-center md:w-40 w-24  mb-4"
                   >
                     <Link to={`/person/${actor.id}`}>

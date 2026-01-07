@@ -30,7 +30,7 @@ const InfoBar = ({ movie }) => {
       {/* Genres */}
       <div className="flex gap-2">
         {movie.genres.slice(0, 3).map((genre) => (
-          <span className="border-2 border-gray-500 rounded-full px-3 py-0.5 text-lg md:text-xl">
+          <span key={genre.id} className="border-2 border-gray-500 rounded-full px-3 py-0.5 text-lg md:text-xl">
             {genre.name}
           </span>
         ))}
@@ -55,7 +55,7 @@ const MovieDetails = () => {
   const [providers, setProviders] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [crew, setCrew] = useState({})
+  const [crew, setCrew] = useState({});
 
   const { addMovie, removeMovie, isMovieInWatchList } = useWatchList();
   const [inWatchList, setInWatchList] = useState(false);
@@ -127,16 +127,16 @@ const MovieDetails = () => {
 
   if (loading) {
     return (
-      <p className="h-[60vh] flex justify-center items-center">
-       <Lottie animationData={loadingAnimation} loop={true} />
-      </p>
+      <div className="h-[60vh] flex justify-center items-center">
+        <Lottie animationData={loadingAnimation} loop={true} />
+      </div>
     );
   }
   if (!movie) {
     return (
-      <p className="h-screen w-full flex justify-center items-center text-lg">
+      <div className="h-screen w-full flex justify-center items-center text-lg">
         Movie not found.
-      </p>
+      </div>
     );
   }
 
@@ -144,7 +144,7 @@ const MovieDetails = () => {
     <div className="relative overflow-x-hidden">
       {/* --- 1. Background Image --- */}
       <div
-        className="absolute top-0 left-0 w-full h-full bg-cover bg-center blur-lg opacity-100"
+        className="absolute top-0 left-0 w-full h-full bg-cover bg-center blur-lg opacity-70"
         style={{
           backgroundImage: `url(${BACKDROP_BASE_URL}${movie.backdrop_path})`,
         }}
@@ -244,7 +244,7 @@ const MovieDetails = () => {
                 )}
               </div>
 
-                {/* Crew */}
+              {/* Crew */}
               <div className="flex gap-8 my-10">
                 {crew.director && (
                   <div>

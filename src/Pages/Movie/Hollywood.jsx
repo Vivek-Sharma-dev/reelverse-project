@@ -32,7 +32,7 @@ const Hollywood = () => {
     [loading, hasMore]
   );
 
-  const getHollywoodContent = async () => {
+  const getHollywoodContent =useCallback( async () => {
     setLoading(true);
     try {
       const [movieRes, tvRes] = await Promise.all([
@@ -73,23 +73,23 @@ const Hollywood = () => {
       setErr(error.message || "Failed to fetch movies. Please try again.");
     }
     setLoading(false);
-  };
+  }, [page]);
 
   useEffect(() => {
     getHollywoodContent();
-  }, [page]);
+  }, [getHollywoodContent]);
 
   return (
     <div>
       <HeroCarousel movies={content.slice(0, 5)} />
       <div className="container mx-auto p-4 md:p-8">
         {loading && content.length === 0 ? (
-          <p className="flex justify-center items-center h-[60dvh]">
+          <div className="flex justify-center items-center h-[60dvh]">
             <Lottie
               animationData={loadingAnimation}
               loop={true}
             />
-          </p>
+          </div>
         ) : err ? (
           // --- B. ERROR STATE ---
          <div>

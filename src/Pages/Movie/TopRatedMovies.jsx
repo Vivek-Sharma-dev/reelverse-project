@@ -5,7 +5,6 @@ import loadingAnimation from "../../assets/animations/loading.json";
 import Lottie from "lottie-react";
 import infinityLoading from '../../assets/animations/loadingInfinity.json'
 
-const currentYear = new Date().getFullYear();
 
 const TopRatedMovies = () => {
   const [content, setContent] = useState([]); 
@@ -28,17 +27,15 @@ const TopRatedMovies = () => {
     [loading, hasMore]
   );
 
-  const getTopRatedContent = async () => {
+  const getTopRatedContent = useCallback( async () => {
     setLoading(true);
     try {
       const movieParams = {
-        primary_release_year: currentYear,
         sort_by: "vote_average.desc",
         "vote_count.gte": 500,
         page: page,
       };
       const tvParams = {
-        first_air_date_year: currentYear,
         sort_by: "vote_average.desc",
         "vote_count.gte": 500,
         page: page,
@@ -80,11 +77,11 @@ const TopRatedMovies = () => {
       console.log(`error fetching top rated: ${error}`);
     }
     setLoading(false);
-  };
+  }, [page]);
 
   useEffect(() => {
     getTopRatedContent();
-  }, [page]);
+  }, [getTopRatedContent]);
 
   return (
     <div className="container mx-auto p-4 md:p-8">
@@ -92,9 +89,9 @@ const TopRatedMovies = () => {
         All Top Rated Movies
       </h1>
       {loading && content.length === 0 ? (
-        <p className="flex justify-center items-center h-[60vh]">
+        <div className="flex justify-center items-center h-[60vh]">
           <Lottie animationData={loadingAnimation} loop={true} />{" "}
-        </p>
+        </div>
       ) : (
         <div className="grid grid-cols-2  md:grid-cols-3 lg:grid-cols-4 md:gap-6 gap-4">
           {content.map((movie, idx) => {

@@ -19,6 +19,7 @@ import UpcomingMovies from './Pages/Movie/UpcomingMovies.jsx';
 import WatchList from './Pages/WatchList.jsx';
 import ActorDetails from './Pages/Details/ActorDetails.jsx'
 import TvShowDetails from './Pages/Details/TvShowDetails.jsx'
+import NowPlaying from './Pages/Movie/NowPlaying.jsx'
 
 
 
@@ -77,6 +78,10 @@ const router = createBrowserRouter([
     element: <UpcomingMovies />,
   },
   { 
+    path: '/now-playing',
+    element: <NowPlaying />,
+  },
+  { 
     path: '/watchList',
     element: <WatchList />,
   },
@@ -85,9 +90,7 @@ const router = createBrowserRouter([
 ])
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
     <WatchListProvider>
     <RouterProvider router={router} />
     </WatchListProvider>
-  </StrictMode>,
 )

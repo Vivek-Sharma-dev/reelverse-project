@@ -3,9 +3,10 @@ import api from "../../api/tmdbApi";
 import MovieCard from "../../Components/MovieCard";
 import Lottie from "lottie-react";
 import loadingAnimation from "../../assets/animations/loading.json";
-import infinityLoading from '../../assets/animations/loadingInfinity.json'
+import infinityLoading from "../../assets/animations/loadingInfinity.json";
+import HeroCarousel from "../../Components/HeroCarousel";
 
-const UpcomingMovies = () => {
+const NowPlaying = () => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -27,10 +28,10 @@ const UpcomingMovies = () => {
     [loading, hasMore]
   );
 
-  const getUpcomingMoviesDetails = useCallback( async () => {
+  const getNowPlayingMovies = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await api.get("/movie/upcoming", {
+      const res = await api.get("/movie/now_playing", {
         params: {
           page: page,
         },
@@ -55,42 +56,48 @@ const UpcomingMovies = () => {
     setLoading(false);
   }, [page]);
 
-
   useEffect(() => {
-    getUpcomingMoviesDetails();
-  }, [getUpcomingMoviesDetails]);
+    getNowPlayingMovies();
+  }, [getNowPlayingMovies]);
 
   return (
-    <div className="container mx-auto p-4 md:p-8">
-      <h1 className="text-3xl md:text-4xl font-bold text-white mb-6">
-        Upcoming Movies
-      </h1>
-      {loading && movies.length === 0 ? (
-        <div className="flex justify-center items-center h-[60vh]">
-          <Lottie animationData={loadingAnimation} loop={true} />
-        </div>
-      ) : (
-        <div className="grid grid-cols-2  md:grid-cols-3 lg:grid-cols-4 md:gap-6 gap-4">
-          {movies.map((movie, idx) => {
-            if (movies.length === idx + 1) {
-              return (
-                <div ref={lastMovieElementRef} key={movie.id}>
-                  <MovieCard movie={movie} />
-                </div>
-              );
-            } else {
-              return <MovieCard key={movie.id} movie={movie} />;
-            }
-          })}
-        </div>
-      )}
-      {loading && movies.length > 0 && (
-        <p className=" flex justify-center mt-8">
-            <Lottie animationData={infinityLoading} loop={true} style={{width:"100px",background: "transparent"}}  />
+    <>
+      <HeroCarousel movies={movies.slice(0, 5)} />
+      <div className="container mx-auto p-4 md:p-8">
+        <h1 className="text-3xl md:text-4xl font-bold text-white mb-6">
+          Now Playing Movies
+        </h1>
+        {loading && movies.length === 0 ? (
+          <div className="flex justify-center items-center h-[60vh]">
+            <Lottie animationData={loadingAnimation} loop={true} />
+          </div>
+        ) : (
+          <div className="grid grid-cols-2  md:grid-cols-3 lg:grid-cols-4 md:gap-6 gap-4">
+            {movies.map((movie, idx) => {
+              if (movies.length === idx + 1) {
+                return (
+                  <div ref={lastMovieElementRef} key={movie.id}>
+                    <MovieCard movie={movie} />
+                  </div>
+                );
+              } else {
+                return <MovieCard key={movie.id} movie={movie} />;
+              }
+            })}
+          </div>
+        )}
+        {loading && movies.length > 0 && (
+          <p className=" flex justify-center mt-8">
+            <Lottie
+              animationData={infinityLoading}
+              loop={true}
+              style={{ width: "100px", background: "transparent" }}
+            />
           </p>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 };
 
-export default UpcomingMovies;
+export default NowPlaying;
