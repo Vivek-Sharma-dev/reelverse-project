@@ -7,3 +7,7 @@
 .swiper-pagination-bullet-active {
     background-color: #216ad9 !important;
 }
+
+.perspective-1000 {
+  perspective: 1000px;
+}

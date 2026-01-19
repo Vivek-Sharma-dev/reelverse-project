@@ -35,6 +35,7 @@ const Anime = () => {
   );
 
   // -- 2.2. Fetch content --
+  useEffect(() => {
   const getAnimeContent = async () => {
     setLoading(true);
     try {
@@ -80,10 +81,9 @@ const Anime = () => {
     setLoading(false);
   };
 
-  useEffect(() => {
     getAnimeContent();
   }, [page]);
-
+  
   return (
     <div>
       <HeroCarousel movies={content.slice(0, 5)} />
