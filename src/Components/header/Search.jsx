@@ -54,6 +54,9 @@ const Search = () => {
     <div className="lg:relative">
       <form
         className="absolute top-20 left-4 w-fit  sm:top-0 md:w-auto sm:relative"
+        role="search"
+        method="get"
+        autoComplete="off"
         onSubmit={handleSearch}
       >
         <span className="relative inline-flex  rounded-full">
