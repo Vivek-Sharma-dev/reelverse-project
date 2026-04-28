@@ -1,9 +1,9 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import MovieCard from "../Components/MovieCard";
-import api from "../api/tmdbApi"; 
+import api from "../api/tmdbApi";
 import Actor from "../Components/Actor";
-import searchingAnimation from '../assets/animations/searching.json'
+import searchingAnimation from "../assets/animations/searching.json";
 import Lottie from "lottie-react";
 
 const SearchResult = () => {
@@ -16,10 +16,9 @@ const SearchResult = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get("q");
 
-  const fetchAllResults = async () => {
-    setLoading(true);
-
+  const fetchAllResults = useCallback(async () => {
     try {
+      setLoading(true);
       const [movieRes, actorRes, tvRes] = await Promise.all([
         api.get("/search/movie", { params: { query: query, page: 1 } }),
         api.get("/search/person", { params: { query: query, page: 1 } }),
@@ -28,22 +27,22 @@ const SearchResult = () => {
 
       setMovies(
         movieRes.data.results.filter(
-          (movie) => movie.backdrop_path || movie.poster_path
-        )
+          (movie) => movie.backdrop_path || movie.poster_path,
+        ),
       );
       setActors(actorRes.data.results.filter((actor) => actor.profile_path));
       setTvShows(
-        tvRes.data.results.filter((tv) => tv.backdrop_path || tv.poster_path)
+        tvRes.data.results.filter((tv) => tv.backdrop_path || tv.poster_path),
       );
     } catch (error) {
       console.log(`error fetching search results: ${error}`);
     }
     setLoading(false);
-  };
+  }, [query]);
 
   useEffect(() => {
     fetchAllResults();
-  }, [query]);
+  }, [query, fetchAllResults]);
 
   const noResult =
     !loading &&
@@ -58,7 +57,11 @@ const SearchResult = () => {
 
       {loading && (
         <p className="flex justify-center items-center h-[60vh]">
-          <Lottie animationData={searchingAnimation} loop={true} style={{width: "200px"}}/>
+          <Lottie
+            animationData={searchingAnimation}
+            loop={true}
+            style={{ width: "200px" }}
+          />
         </p>
       )}
 
