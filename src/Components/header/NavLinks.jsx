@@ -110,12 +110,12 @@ const NavLinks = () => {
         </NavLink>
         <NavLink
           onClick={handlerLinkClick}
-          to="/bollywood"
+          to="/indian"
           className={({ isActive }) =>
             `${baseLinkStyle} ${navLinkClass({ isActive })}`
           }
         >
-          Bollywood
+          Indian
         </NavLink>
         <NavLink
           onClick={handlerLinkClick}

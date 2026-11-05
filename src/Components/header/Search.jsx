@@ -26,11 +26,11 @@ const Search = () => {
     const delayDebounceFn = setTimeout(async () => {
       if (query.length > 2) {
         const data = await searchMovies(query);
-        setResults(data.slice(0, 20)); // Sirf top 5 results dikhao
+        setResults(data.slice(0, 20)); // Top 20 results
       } else {
         setResults([]);
       }
-    }, 300); // Debouncing taaki har keystroke par API call na ho
+    }, 300); // 300ms delay
 
     return () => clearTimeout(delayDebounceFn);
   }, [query]);

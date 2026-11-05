@@ -7,7 +7,6 @@ import Lottie from "lottie-react";
 import loadingAnimation from "../assets/animations/loading.json";
 import error from "../assets/animations/Error.json";
 
-const currentYear = new Date().getFullYear();
 
 const Home = () => {
   // --- 1. ADD STATE VARIABLES ---
@@ -105,7 +104,6 @@ const Home = () => {
     getUpcomingMovies,
   ]);
 
-  // console.log(nowPlayingMovies);
   useEffect(() => {
     getAllMovies();
   }, [getAllMovies]);
@@ -176,7 +174,7 @@ const Home = () => {
           <section className="mb-12 container p-4 m-auto">
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-3xl md:text-4xl font-bold text-white">
-                Top Rated ({currentYear})
+                Top Rated 
               </h1>
               <Link
                 to="/top-rated-movies"

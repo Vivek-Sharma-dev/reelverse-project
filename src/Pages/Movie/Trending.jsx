@@ -13,12 +13,6 @@ const Trending = () => {
 
   const observer = useRef();
 
-  // const getYearList = () => {
-  //   const currentYear = new Date().getFullYear();
-  //   return Array.from({ length: 30 }, (_, index) => currentYear - index);
-  // };
-
-  // const yearList = getYearList();
   const lastMovieElementRef = useCallback(
     (node) => {
       if (loading) return;

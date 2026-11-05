@@ -57,38 +57,10 @@ const Footer = () => {
         </div>
 
         {/* --- Bottom Section: Copyright & Socials --- */}
-        <div className="mt-16 pt-8 border-t border-gray-800 flex flex-col sm:flex-row justify-between items-center">
+        <div className="mt-16 pt-8 border-t border-gray-800 flex flex-col sm:flex-row justify-center items-center">
           <p className="text-gray-400 text-lg">
-            &copy; {new Date().getFullYear()} Vivek Sharma. All rights reserved.
+            &copy; {new Date().getFullYear()} Nikki. All rights reserved.
           </p>
-          
-          <div className="flex gap-6 mt-4 sm:mt-0">
-            <a
-              href="https://github.com/Vivek-Sharma-dev"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-400 hover:text-white transition-all hover:rotate-y-180  hover:scale-120"
-              title="GitHub"
-            >
-              <FaGithub size={24} />
-            </a>
-            <a
-              href="www.linkedin.com/in/vivek-sharma-44776233a" 
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-400 hover:text-white transition-all hover:rotate-y-180  hover:scale-120"
-              title="LinkedIn"
-            >
-              <FaLinkedin size={24} />
-            </a>
-            <a
-              href="mailto:viveksharmaa252@gmail.com"
-              className="text-gray-400 hover:text-white transition-all hover:rotate-y-180  hover:scale-120"
-              title="Email"
-            >
-              <MdEmail size={24} />
-            </a>
-          </div>
         </div>
 
       </div>

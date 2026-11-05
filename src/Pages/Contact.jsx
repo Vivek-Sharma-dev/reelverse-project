@@ -2,7 +2,7 @@ import { MdSend } from 'react-icons/md';
 
 const Contact = () => {
   // link of my Formspree form
-  const FORMSPREE_URL = "https://formspree.io/f/xpwovegv";
+  const FORMSPREE_URL = "https://formspree.io/f/xgojdqbr";
 
   return (
     <div className="container mx-auto p-4 md:p-8 max-w-2xl">
